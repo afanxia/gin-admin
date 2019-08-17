@@ -25,10 +25,10 @@ var (
 )
 
 func init() {
-	flag.StringVar(&configFile, "c", "", "配置文件(.json,.yaml,.toml)")
-	flag.StringVar(&modelFile, "m", "", "Casbin的访问控制模型(.conf)")
+	flag.StringVar(&configFile, "c", "./configs/config.toml", "配置文件(.json,.yaml,.toml)")
+	flag.StringVar(&modelFile, "m", "./configs/model.conf", "Casbin的访问控制模型(.conf)")
 	flag.StringVar(&wwwDir, "www", "", "静态站点目录")
-	flag.StringVar(&swaggerDir, "swagger", "", "swagger目录")
+	flag.StringVar(&swaggerDir, "swagger", "./internal/app/swagger", "swagger目录")
 }
 
 func main() {
