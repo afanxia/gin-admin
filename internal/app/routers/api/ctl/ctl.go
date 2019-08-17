@@ -12,6 +12,7 @@ import (
 //   })
 func Inject(container *dig.Container) error {
 	container.Provide(NewDemo)
+	container.Provide(NewWs)
 	container.Provide(NewLogin)
 	container.Provide(NewMenu)
 	container.Provide(NewRole)

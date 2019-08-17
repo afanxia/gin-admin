@@ -45,12 +45,25 @@ func NewContext(c *gin.Context) context.Context {
 // GetToken 获取用户令牌
 func GetToken(c *gin.Context) string {
 	var token string
+	wsUpgrade := c.GetHeader("Upgrade")
+	if wsUpgrade == "websocket" {
+		return getWsToken(c)
+	}
 	auth := c.GetHeader("Authorization")
 	prefix := "Bearer "
 	if auth != "" && strings.HasPrefix(auth, prefix) {
 		token = auth[len(prefix):]
 	}
 	return token
+}
+
+// getWsToken 获取websocket用户令牌
+func getWsToken(c *gin.Context) string {
+	token := c.Query("token")
+	if token != "" {
+		return token
+	}
+	return ""
 }
 
 // GetPageIndex 获取分页的页索引

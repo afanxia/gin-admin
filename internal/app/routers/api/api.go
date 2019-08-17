@@ -9,6 +9,13 @@ import (
 	"go.uber.org/dig"
 )
 
+// RegisterWsRouter 注册webSocket路由
+//func RegisterWsRouter(app *gin.Engine) error {
+//	var ws *ctl.Ws
+//	app.GET("/ping", ws.Ping)
+//	return nil
+//}
+
 // RegisterRouter 注册/api路由
 func RegisterRouter(app *gin.Engine, container *dig.Container) error {
 	err := ctl.Inject(container)
@@ -20,6 +27,7 @@ func RegisterRouter(app *gin.Engine, container *dig.Container) error {
 		e *casbin.Enforcer,
 		demo *ctl.Demo,
 		login *ctl.Login,
+		ws *ctl.Ws,
 		menu *ctl.Menu,
 		role *ctl.Role,
 		user *ctl.User,
@@ -52,6 +60,7 @@ func RegisterRouter(app *gin.Engine, container *dig.Container) error {
 			pub := v1.Group("/pub")
 			{
 				// 注册/api/v1/pub/login
+				pub.GET("/ping", ws.Ping)
 				pub.GET("/login/captchaid", login.GetCaptcha)
 				pub.GET("/login/captcha", login.ResCaptcha)
 				pub.POST("/login", login.Login)

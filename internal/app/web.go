@@ -14,6 +14,38 @@ import (
 	"go.uber.org/dig"
 )
 
+// InitWsWeb 初始化webSocket引擎
+//func InitWsWeb() *gin.Engine {
+//	cfg := config.GetGlobalConfig()
+//	gin.SetMode(cfg.RunMode)
+//
+//	app := gin.New()
+//	app.NoMethod(middleware.NoMethodHandler())
+//	app.NoRoute(middleware.NoRouteHandler())
+//
+//	apiPrefixes := []string{"/api/"}
+//
+//	// 跟踪ID
+//	app.Use(middleware.TraceMiddleware(middleware.AllowPathPrefixNoSkipper(apiPrefixes...)))
+//
+//	// 访问日志
+//	app.Use(middleware.LoggerMiddleware(middleware.AllowPathPrefixNoSkipper(apiPrefixes...)))
+//
+//	// 崩溃恢复
+//	app.Use(middleware.RecoveryMiddleware())
+//
+//	// 跨域请求
+//	if cfg.CORS.Enable {
+//		app.Use(middleware.CORSMiddleware())
+//	}
+//
+//	// 注册/api路由
+//	err := api.RegisterWsRouter(app)
+//	handleError(err)
+//
+//	return app
+//}
+
 // InitWeb 初始化web引擎
 func InitWeb(container *dig.Container) *gin.Engine {
 	cfg := config.GetGlobalConfig()
@@ -60,6 +92,7 @@ func InitWeb(container *dig.Container) *gin.Engine {
 func InitHTTPServer(ctx context.Context, container *dig.Container) func() {
 	cfg := config.GetGlobalConfig().HTTP
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
+	//wsAddr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port+1)
 	srv := &http.Server{
 		Addr:         addr,
 		Handler:      InitWeb(container),
@@ -67,6 +100,13 @@ func InitHTTPServer(ctx context.Context, container *dig.Container) func() {
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  15 * time.Second,
 	}
+	//wsSrv := &http.Server{
+	//	Addr:         wsAddr,
+	//	Handler:      InitWsWeb(),
+	//	ReadTimeout:  5 * time.Second,
+	//	WriteTimeout: 10 * time.Second,
+	//	IdleTimeout:  15 * time.Second,
+	//}
 
 	go func() {
 		logger.Printf(ctx, "HTTP服务开始启动，地址监听在：[%s]", addr)
@@ -76,6 +116,14 @@ func InitHTTPServer(ctx context.Context, container *dig.Container) func() {
 		}
 	}()
 
+	//go func() {
+	//	logger.Printf(ctx, "WebSocket服务开始启动，地址监听在：[%s]", wsAddr)
+	//	err := wsSrv.ListenAndServe()
+	//	if err != nil && err != http.ErrServerClosed {
+	//		logger.Errorf(ctx, err.Error())
+	//	}
+	//}()
+
 	return func() {
 		ctx, cancel := context.WithTimeout(ctx, time.Second*time.Duration(cfg.ShutdownTimeout))
 		defer cancel()
@@ -84,5 +132,10 @@ func InitHTTPServer(ctx context.Context, container *dig.Container) func() {
 		if err := srv.Shutdown(ctx); err != nil {
 			logger.Errorf(ctx, err.Error())
 		}
+
+		//wsSrv.SetKeepAlivesEnabled(false)
+		//if err := wsSrv.Shutdown(ctx); err != nil {
+		//	logger.Errorf(ctx, err.Error())
+		//}
 	}
 }

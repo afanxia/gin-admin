@@ -2,13 +2,14 @@ package ctl
 
 import (
 	"github.com/LyricTian/captcha"
+	"github.com/gin-gonic/gin"
+
 	"github.com/LyricTian/gin-admin/internal/app/bll"
 	"github.com/LyricTian/gin-admin/internal/app/config"
 	"github.com/LyricTian/gin-admin/internal/app/errors"
 	"github.com/LyricTian/gin-admin/internal/app/ginplus"
 	"github.com/LyricTian/gin-admin/internal/app/schema"
 	"github.com/LyricTian/gin-admin/pkg/logger"
-	"github.com/gin-gonic/gin"
 )
 
 // NewLogin 创建登录管理控制器
